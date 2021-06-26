@@ -36,13 +36,11 @@ def deck_creator():
     for count, point in enumerate(points):
         point.append(ranks[count])
     deck = []
-    i = 0
-    while i < 4:
+    for suit in suits:
         card_container = copy.deepcopy(points)
         for point in card_container:
-            point.append(suits[i])
+            point.append(suit)
         deck.append(card_container)
-        i += 1
     return [item for sublist in deck for item in sublist]
 
 
