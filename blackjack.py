@@ -1,7 +1,7 @@
 import copy
 
 # To do :
-# -Create a list to store the suit, rank, and point value for each card
+# <<<<<<<<<<<<DONE>>>>>>>>-Create a list to store the suit, rank, and point value for each card
 
 # <<<<<<<<<<<<DONE>>>>>>>>-Use a list of lists to store the cards in the deck. You can use two nested loops to create the deck of cards
 
@@ -23,6 +23,11 @@ import copy
 # >>> The bet can't be bigger than the player's current amount of money.
 
 # -If the money amount drops below the minimum bet(5), the program should give the player the option to buy more chips.
+
+
+def title():
+    print("Welcome to blackjack")
+    print()
 
 
 def deck_creator():
