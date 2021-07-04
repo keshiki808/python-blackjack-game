@@ -1,4 +1,6 @@
 import copy
+import db
+import random
 
 # To do :
 # <<<<<<<<<<<<DONE>>>>>>>>-Create a list to store the suit, rank, and point value for each card
@@ -9,11 +11,11 @@ import copy
 
 # <<<<<<<<<<<<DONE>>>>>>>>-When the program starts, it should read the player's money amount from a CSV/txt file named money.txt'
 
-# -The program should write the player's money amount to a file any time the data is changed'
+# <<<<<<<<<<<<DONE>>>>>>>>-The program should write the player's money amount to a file any time the data is changed'
 
-# -Store the functions for writing and reading the moneu amount in a separate module named db.py
+# <<<<<<<<<<<<DONE>>>>>>>>-Store the functions for writing and reading the moneu amount in a separate module named db.py
 
-# -Handle the exception that occurs if the player can't find the data file
+# <<<<<<<<<<<<DONE>>>>>>>>-Handle the exception that occurs if the player can't find the data file
 
 # -Handle the exceptions that occur if the user enters a string where an integer or float value is expected
 
@@ -25,21 +27,48 @@ import copy
 # -If the money amount drops below the minimum bet(5), the program should give the player the option to buy more chips.
 
 
-def money_reader():
-    with open("money_store.txt") as file:
-        for line in file:
-            player_money = line
-    return float(player_money)
-
-
-def money_writer(player_money):
-    with open("money_store.txt", "w") as file:
-        file.write(str(player_money))
-
-
 def title():
     print("Welcome to blackjack")
     print()
+
+
+def card_picker(deck):
+    random_card = random.choice(deck)
+    deck.remove(random_card)
+    return random_card
+
+
+def card_value_tabulator(player_cards):
+    value = 0
+    for card in player_cards:
+        value += card[0]
+    return value
+
+
+def user_bet_input(player_money):
+    while True:
+        try:
+            bet = float(input("Please enter an amount to be between 5 and 1000: "))
+            if bet < 5 or bet > 1000:
+                raise ValueError(
+                    "Invalid entry, you must enter a value between 5 and 1000"
+                )
+            elif bet > player_money:
+                raise ValueError("You can't bet more money than you have")
+            else:
+                player_money -= bet
+                db.money_writer(player_money)
+                return bet, player_money
+        except ValueError as e:
+            print(e)
+
+
+def money_updator(player_money, bet_amount, result):
+    if result == "player win":
+        player_money += bet_amount * 1.5
+        return player_money
+    elif result == "player loss":
+
 
 
 def deck_creator():
@@ -63,9 +92,10 @@ def deck_creator():
 
 def main():
     deck = deck_creator()
-    player_money = money_reader()
+    player_money = db.money_reader()
     player_money = 200
-    money_writer(player_money)
+    db.money_writer(player_money)
+    bet, player_money = user_bet_input(player_money)
     print("Player money", player_money)
     print(deck)
 
