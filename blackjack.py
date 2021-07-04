@@ -25,6 +25,13 @@ import copy
 # -If the money amount drops below the minimum bet(5), the program should give the player the option to buy more chips.
 
 
+def money_reader():
+    with open("money_store.txt") as file:
+        for line in file:
+            player_money = line
+    return player_money
+
+
 def title():
     print("Welcome to blackjack")
     print()
@@ -51,6 +58,8 @@ def deck_creator():
 
 def main():
     deck = deck_creator()
+    player_money = money_reader()
+    print("Player money", player_money)
     print(deck)
 
 
