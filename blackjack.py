@@ -7,7 +7,7 @@ import copy
 
 # -Use a list of lists to store the dealer's hand and the player's hand
 
-# -When the program starts, it should read the player's money amount from a CSV/txt file named money.txt'
+# <<<<<<<<<<<<DONE>>>>>>>>-When the program starts, it should read the player's money amount from a CSV/txt file named money.txt'
 
 # -The program should write the player's money amount to a file any time the data is changed'
 
@@ -29,7 +29,12 @@ def money_reader():
     with open("money_store.txt") as file:
         for line in file:
             player_money = line
-    return player_money
+    return float(player_money)
+
+
+def money_writer(player_money):
+    with open("money_store.txt", "w") as file:
+        file.write(str(player_money))
 
 
 def title():
@@ -59,6 +64,8 @@ def deck_creator():
 def main():
     deck = deck_creator()
     player_money = money_reader()
+    player_money = 200
+    money_writer(player_money)
     print("Player money", player_money)
     print(deck)
 
