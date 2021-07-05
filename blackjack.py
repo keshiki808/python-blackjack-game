@@ -69,15 +69,30 @@ def ace_checker(player_cards, value):
     return value
 
 
-def end_condition_check(hand_value):
+def dealer_ace_checker(player_cards, value):
+    flattened_hand = [item for sublist in player_cards for item in sublist]
+    ace_count = flattened_hand.count("Ace")
+    for n in range(ace_count):
+        while True:
+            if value <= 11:
+                value += 10
+                break
+            else:
+                break
+    return value
+
+
+def status_checker(hand_value):
     if hand_value == 21:
-        print("BLACKJACK")
+        return "BLACKJACK"
     elif hand_value > 21:
-        print("BUST")
+        return "BUST"
+    else:
+        return
 
 
 def card_display(hand, hand_owner):
-    print(f"{hand_owner}'s CARDS:")
+    print(f"{hand_owner} CARDS:")
     for card in hand:
         print(f"{card[1]} of {card[2]}")
 
@@ -133,11 +148,10 @@ def hit_or_stand_declaration():
     while True:
         try:
             user_response = input("Hit or Stand? (hit/stand): ").lower()
-            if user_response != "hit" and user_response != "stand":
-                raise Exception
-            else:
+            if user_response == "hit" or user_response == "stand":
                 return True if user_response == "hit" else False
-
+            else:
+                raise Exception
         except Exception:
             print("You must enter hit or stand")
 
@@ -171,6 +185,7 @@ def main():
     while dealer_hand_value < 17:
         card_picker(deck, dealer_hand)
         dealer_hand_value = hand_value_tabulator(dealer_hand)
+        dealer_hand_value = dealer_ace_checker(dealer_hand, dealer_hand_value)
 
 
 if __name__ == "__main__":
