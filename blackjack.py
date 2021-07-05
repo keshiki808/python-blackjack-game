@@ -19,7 +19,7 @@ import random
 
 # -Handle the exceptions that occur if the user enters a string where an integer or float value is expected
 
-# -The program should validate the bet amount.
+# <<<<<<<<<<<<DONE>>>>>>>>-The program should validate the bet amount.
 # >>> The minimum bet should be 5
 # >>> The maximum bet should be 1,000
 # >>> The bet can't be bigger than the player's current amount of money.
@@ -32,17 +32,51 @@ def title():
     print()
 
 
-def card_picker(deck):
+def card_picker(deck, hand):
     random_card = random.choice(deck)
     deck.remove(random_card)
-    return random_card
+    hand.append(random_card)
 
 
-def card_value_tabulator(player_cards):
+def hand_value_tabulator(player_cards):
     value = 0
     for card in player_cards:
         value += card[0]
+    value = ace_checker(player_cards, value)
     return value
+
+
+def ace_checker(player_cards, value):
+    flattened_hand = [item for sublist in player_cards for item in sublist]
+    ace_count = flattened_hand.count("Ace")
+    for n in range(ace_count):
+        while True:
+            if value <= 11:
+                try:
+                    ace_response = int(input("Please enter "))
+                    if ace_response == 11:
+                        value += 10
+                        break
+                    elif ace_response == 1:
+                        break
+                except ValueError:
+                    print("Please enter 1 or 11")
+            else:
+                break
+    return value
+
+
+def end_condition_check(hand_value):
+    if hand_value == 21:
+        print("BLACKJACK")
+    elif hand_value > 21:
+        print("BUST")
+
+
+def card_display(hand, hand_owner):
+    print(f"{hand_owner}'s CARDS:")
+    for card in hand:
+        print(f"{card[1]} of {card[2]}")
 
 
 def user_bet_input(player_money):
@@ -50,16 +84,18 @@ def user_bet_input(player_money):
         try:
             bet = float(input("Please enter an amount to be between 5 and 1000: "))
             if bet < 5 or bet > 1000:
-                raise ValueError(
-                    "Invalid entry, you must enter a value between 5 and 1000"
+                raise Exception(
+                    "Invalid entry: It must be a numerical value between 5 and 1000"
                 )
             elif bet > player_money:
-                raise ValueError("You can't bet more money than you have")
+                raise Exception("You can't bet more money than you have")
             else:
                 player_money -= bet
                 db.money_writer(player_money)
                 return bet, player_money
-        except ValueError as e:
+        except ValueError:
+            print("The entry must be a valid integer or float between 5 and 1000")
+        except Exception as e:
             print(e)
 
 
@@ -68,7 +104,7 @@ def money_updator(player_money, bet_amount, result):
         player_money += bet_amount * 1.5
         return player_money
     elif result == "player loss":
-
+        return
 
 
 def deck_creator():
@@ -98,6 +134,15 @@ def main():
     bet, player_money = user_bet_input(player_money)
     print("Player money", player_money)
     print(deck)
+    player_hand = []
+    dealer_hand = []
+    card_picker(deck, dealer_hand)
+    print(f"DEALER'S SHOW CARD:\n{dealer_hand[0][1]} of {dealer_hand[0][2]}")
+    stand = False
+    while stand == False:
+        card_picker(deck, player_hand)
+        card_picker(deck, player_hand)
+        card_display(player_hand, "YOUR")
 
 
 if __name__ == "__main__":
