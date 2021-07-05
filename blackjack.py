@@ -82,13 +82,8 @@ def dealer_ace_checker(player_cards, value):
     return value
 
 
-def status_checker(hand_value):
-    if hand_value == 21:
-        return "BLACKJACK"
-    elif hand_value > 21:
-        return "BUST"
-    else:
-        return
+def bust_checker(hand_value):
+    return True if hand_value > 21 else False
 
 
 def card_display(hand, hand_owner):
@@ -156,6 +151,44 @@ def hit_or_stand_declaration():
             print("You must enter hit or stand")
 
 
+def player_victory_check(
+    player_hand_value, dealer_hand_value, player_bust_status, dealer_bust_status
+):
+    if (
+        player_hand_value > dealer_hand_value
+        and player_bust_status != True
+        or dealer_bust_status == True
+    ):
+        return True
+    else:
+        False
+
+
+def draw_check(player_hand_value, dealer_hand_value):
+    return True if player_hand_value == dealer_hand_value else False
+
+
+def payout(player_win_status, draw_status, bet, player_money):
+    if player_win_status:
+        payout = bet * 1.5
+    elif draw_status:
+        payout = bet
+    else:
+        payout = 0
+    player_money += payout
+    db.money_writer(player_money)
+    return player_money
+
+
+def results_display(player_win_status, draw_status):
+    if player_win_status:
+        print("Player wins")
+    elif draw_status:
+        print("It was a draw")
+    else:
+        print("Player loses")
+
+
 def main():
     deck = deck_creator()
     player_money = db.money_reader()
@@ -176,16 +209,35 @@ def main():
     player_hand_value = ace_checker(player_hand, player_hand_value)
     print(player_hand_value)
     hit = hit_or_stand_declaration()
+    player_bust = False
+    dealer_bust = False
     while hit == True:
         card_picker(deck, player_hand)
         card_display(player_hand, "YOUR")
         player_hand_value = hand_value_tabulator(player_hand)
         player_hand_value = ace_checker(player_hand, player_hand_value)
-        hit = hit_or_stand_declaration()
+        player_bust = bust_checker(player_hand_value)
+        if player_bust:
+            break
+        else:
+            hit = hit_or_stand_declaration()
     while dealer_hand_value < 17:
+        if player_bust:
+            break
         card_picker(deck, dealer_hand)
         dealer_hand_value = hand_value_tabulator(dealer_hand)
         dealer_hand_value = dealer_ace_checker(dealer_hand, dealer_hand_value)
+        dealer_bust = bust_checker(dealer_hand_value)
+        if dealer_bust:
+            break
+    player_win = False
+    draw = draw_check(player_hand_value, dealer_hand_value)
+    if not draw:
+        player_win = player_victory_check(
+            player_hand_value, dealer_hand_value, player_bust, dealer_bust
+        )
+    payout(player_win, draw, bet, player_money)
+    results_display(player_win, draw)
 
 
 if __name__ == "__main__":
