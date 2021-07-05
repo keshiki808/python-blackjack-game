@@ -42,7 +42,6 @@ def hand_value_tabulator(player_cards):
     value = 0
     for card in player_cards:
         value += card[0]
-    value = ace_checker(player_cards, value)
     return value
 
 
@@ -53,12 +52,16 @@ def ace_checker(player_cards, value):
         while True:
             if value <= 11:
                 try:
-                    ace_response = int(input("Please enter "))
+                    ace_response = int(
+                        input("Please enter 1 or 11 to state your ace value: ")
+                    )
                     if ace_response == 11:
                         value += 10
                         break
                     elif ace_response == 1:
                         break
+                    else:
+                        raise ValueError
                 except ValueError:
                     print("Please enter 1 or 11")
             else:
@@ -126,6 +129,19 @@ def deck_creator():
     return [item for sublist in deck for item in sublist]
 
 
+def hit_or_stand_declaration():
+    while True:
+        try:
+            user_response = input("Hit or Stand? (hit/stand): ").lower()
+            if user_response != "hit" and user_response != "stand":
+                raise Exception
+            else:
+                return True if user_response == "hit" else False
+
+        except Exception:
+            print("You must enter hit or stand")
+
+
 def main():
     deck = deck_creator()
     player_money = db.money_reader()
@@ -137,12 +153,24 @@ def main():
     player_hand = []
     dealer_hand = []
     card_picker(deck, dealer_hand)
+    dealer_hand_value = hand_value_tabulator(dealer_hand)
     print(f"DEALER'S SHOW CARD:\n{dealer_hand[0][1]} of {dealer_hand[0][2]}")
-    stand = False
-    while stand == False:
-        card_picker(deck, player_hand)
+    card_picker(deck, player_hand)
+    card_picker(deck, player_hand)
+    card_display(player_hand, "YOUR")
+    player_hand_value = hand_value_tabulator(player_hand)
+    player_hand_value = ace_checker(player_hand, player_hand_value)
+    print(player_hand_value)
+    hit = hit_or_stand_declaration()
+    while hit == True:
         card_picker(deck, player_hand)
         card_display(player_hand, "YOUR")
+        player_hand_value = hand_value_tabulator(player_hand)
+        player_hand_value = ace_checker(player_hand, player_hand_value)
+        hit = hit_or_stand_declaration()
+    while dealer_hand_value < 17:
+        card_picker(deck, dealer_hand)
+        dealer_hand_value = hand_value_tabulator(dealer_hand)
 
 
 if __name__ == "__main__":
