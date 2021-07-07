@@ -7,7 +7,7 @@ import random
 
 # <<<<<<<<<<<<DONE>>>>>>>>-Use a list of lists to store the cards in the deck. You can use two nested loops to create the deck of cards
 
-# -Use a list of lists to store the dealer's hand and the player's hand
+# <<<<<<<<<<<<DONE>>>>>>>>-Use a list of lists to store the dealer's hand and the player's hand
 
 # <<<<<<<<<<<<DONE>>>>>>>>-When the program starts, it should read the player's money amount from a CSV/txt file named money.txt'
 
@@ -225,6 +225,7 @@ def main():
         if player_bust:
             break
         card_picker(deck, dealer_hand)
+        card_display(dealer_hand, "DEALER'S")
         dealer_hand_value = hand_value_tabulator(dealer_hand)
         dealer_hand_value = dealer_ace_checker(dealer_hand, dealer_hand_value)
         dealer_bust = bust_checker(dealer_hand_value)
