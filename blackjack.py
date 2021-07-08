@@ -24,20 +24,22 @@ import random
 # <<<<<<<<<<<<DONE>>>>>>>>>>> The maximum bet should be 1,000
 # <<<<<<<<<<<<DONE>>>>>>>>>>> The bet can't be bigger than the player's current amount of money.
 
-# -If the money amount drops below the minimum bet(5), the program should give the player the option to buy more chips.
+# <<<<<<<<<<<<DONE>>>>>>>>>>>-If the money amount drops below the minimum bet(5), the program should give the player the option to buy more chips.
 
-
+# Displays the title
 def title():
     print("Welcome to blackjack")
     print()
 
 
+# Picks a random card from the deck
 def card_picker(deck, hand):
     random_card = random.choice(deck)
     deck.remove(random_card)
     hand.append(random_card)
 
 
+# Accepts a hand and tabulates the value of it
 def hand_value_tabulator(player_cards):
     value = 0
     for card in player_cards:
@@ -45,6 +47,7 @@ def hand_value_tabulator(player_cards):
     return value
 
 
+# Determines if the player has any aces, allows them to choose 1 or 11 for the value
 def ace_checker(player_cards, value):
     flattened_hand = [item for sublist in player_cards for item in sublist]
     ace_count = flattened_hand.count("Ace")
@@ -69,6 +72,7 @@ def ace_checker(player_cards, value):
     return value
 
 
+# Determines if the dealer has any aces, and chooses the appropriate value between 1 or 11 automatically
 def dealer_ace_checker(player_cards, value):
     flattened_hand = [item for sublist in player_cards for item in sublist]
     ace_count = flattened_hand.count("Ace")
@@ -82,20 +86,23 @@ def dealer_ace_checker(player_cards, value):
     return value
 
 
+# Returns a boolean to determine if the player or dealer have gone over 21 and bust(lose)
 def bust_checker(hand_value):
     return True if hand_value > 21 else False
 
 
+# Displays the cards in the player or dealer's hand
 def card_display(hand, hand_owner):
     print(f"{hand_owner} CARDS:")
     for card in hand:
         print(f"{card[1]} of {card[2]}")
 
 
+# Accepts the user wager
 def user_bet_input(player_money):
     while True:
         try:
-            bet = float(input("Please enter an amount to be between 5 and 1000: "))
+            bet = float(input("Please enter an amount to bet between 5 and 1000: "))
             if bet < 5 or bet > 1000:
                 raise Exception(
                     "Invalid entry: It must be a numerical value between 5 and 1000"
@@ -110,14 +117,6 @@ def user_bet_input(player_money):
             print("The entry must be a valid integer or float between 5 and 1000")
         except Exception as e:
             print(e)
-
-
-def money_updator(player_money, bet_amount, result):
-    if result == "player win":
-        player_money += bet_amount * 1.5
-        return player_money
-    elif result == "player loss":
-        return
 
 
 def deck_creator():
@@ -139,6 +138,7 @@ def deck_creator():
     return [item for sublist in deck for item in sublist]
 
 
+# Initiates player turn cycle
 def hit_or_stand_declaration():
     while True:
         try:
@@ -151,6 +151,7 @@ def hit_or_stand_declaration():
             print("You must enter hit or stand")
 
 
+# Accepts player and dealer states as arguments and returns a boolean indicating if the player won
 def player_victory_check(
     player_hand_value, dealer_hand_value, player_bust_status, dealer_bust_status
 ):
@@ -164,10 +165,12 @@ def player_victory_check(
         False
 
 
+# Returns a boolean to determine if the dealer and player draw
 def draw_check(player_hand_value, dealer_hand_value):
     return True if player_hand_value == dealer_hand_value else False
 
 
+# Calculates the payout for the
 def payout(player_win_status, draw_status, bet, player_money):
     if player_win_status:
         payout = bet * 1.5
@@ -180,6 +183,7 @@ def payout(player_win_status, draw_status, bet, player_money):
     return player_money
 
 
+# Displays the results of the round
 def results_display(player_win_status, draw_status):
     if player_win_status:
         print("Player wins")
@@ -189,6 +193,7 @@ def results_display(player_win_status, draw_status):
         print("Player loses")
 
 
+# Gives the player the option to purchase more chips or refuse (and quit the game)
 def buy_chips(player_chips):
     while True:
         response = input(
@@ -198,29 +203,40 @@ def buy_chips(player_chips):
             try:
                 money_response = int(
                     input(
-                        f"How many chips would you like to buy? Enter a value between 5 and {1000 - player_chips} :"
+                        f"How many chips would you like to buy? Enter a value between 5 and 1000 chips :"
                     )
                 )
-                if money_response < 5 or money_response > (1000 - player_chips):
+                print()
+                if money_response < 5 or money_response > 1000:
                     print(
-                        "Invalid entry, entry you need to purchase at least 5 chips and you can't hold more than 1000"
+                        "Invalid entry, you need to purchase at least 5 chips and no more than 1000\n"
                     )
                 else:
+                    print(
+                        f"Thank you for your purchase. You now have {player_chips + money_response} chips"
+                    )
                     return player_chips + money_response
             except ValueError:
-                print("You must enter a valid integer and you can only hold 1000 chips")
+                print("You must enter a valid integer\n")
         elif response == "n":
             print(
                 """
-            You've decided against purchasing anymore chips.
-            You reach into your pocket and remove your wallet, your eyes widen as you open it to realize
-            your life savings that you had withdrawn to try to win big have dwindled to nothing.
-            You realize even if you had wanted to purchase more chips you couldn't. You've lost everything.
-            You've spent your last few dollars on a bus ride home. A sense of dread consumes you when you
-            think that perhaps the last time you see you wife and daughter will be when you arrive home and 
-            explain what happened. You lean back on the cold bus seat and close your eyes, hoping this is merely a bad dream but you know 
-            that the reality is that your life has been consumed by the fires of gambling hell. """
+                You've decided against purchasing anymore chips.
+                You reach into your pocket and remove your wallet, 
+                your eyes widen as you open it to realize
+                your life savings that you had withdrawn to 
+                try to win big have dwindled to nothing.
+                You realize even if you had wanted to purchase 
+                more chips you couldn't. You've lost everything.
+                You've spent your last few dollars on a bus ride home.
+                A sense of dread consumes you when you
+                think that perhaps the last time you see you wife and 
+                daughter will be when you arrive home and explain what happened. 
+                You lean back on the cold bus seat and close your eyes, hoping this is 
+                merely a bad dream but you know that the reality is that your life 
+                has been consumed by the fires of gambling hell.\n """
             )
+            quit()
         else:
             print("You must enter 'y' or 'n' to proceed")
             continue
@@ -229,7 +245,9 @@ def buy_chips(player_chips):
 def main():
     deck = deck_creator()
     player_money = db.money_reader()
-    player_money = 200
+    player_money = 2
+    if player_money < 5:
+        player_money = buy_chips(player_money)
     db.money_writer(player_money)
     bet, player_money = user_bet_input(player_money)
     print("Player money", player_money)
@@ -254,6 +272,7 @@ def main():
         player_hand_value = hand_value_tabulator(player_hand)
         player_hand_value = ace_checker(player_hand, player_hand_value)
         player_bust = bust_checker(player_hand_value)
+        print()
         if player_bust:
             break
         else:
@@ -266,6 +285,7 @@ def main():
         dealer_hand_value = hand_value_tabulator(dealer_hand)
         dealer_hand_value = dealer_ace_checker(dealer_hand, dealer_hand_value)
         dealer_bust = bust_checker(dealer_hand_value)
+        print()
         if dealer_bust:
             break
     player_win = False
