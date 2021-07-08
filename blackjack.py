@@ -188,12 +188,42 @@ def results_display(player_win_status, draw_status):
     else:
         print("Player loses")
 
-def buy_chips():
-    while true:
-        try:
-            response = input("You have less than 5 chips, Would you like to buy some more? (y/n): ")
-            if response == "y":
-                money_response = input("You have less than 5 chips, Would you like to buy some more? (y/n): ")
+
+def buy_chips(player_chips):
+    while True:
+        response = input(
+            "You have less than 5 chips, Would you like to buy some more? (y/n): "
+        )
+        if response == "y":
+            try:
+                money_response = int(
+                    input(
+                        f"How many chips would you like to buy? Enter a value between 5 and {1000 - player_chips} :"
+                    )
+                )
+                if money_response < 5 or money_response > (1000 - player_chips):
+                    print(
+                        "Invalid entry, entry you need to purchase at least 5 chips and you can't hold more than 1000"
+                    )
+                else:
+                    return player_chips + money_response
+            except ValueError:
+                print("You must enter a valid integer and you can only hold 1000 chips")
+        elif response == "n":
+            print(
+                """
+            You've decided against purchasing anymore chips.
+            You reach into your pocket and remove your wallet, your eyes widen as you open it to realize
+            your life savings that you had withdrawn to try to win big have dwindled to nothing.
+            You realize even if you had wanted to purchase more chips you couldn't. You've lost everything.
+            You've spent your last few dollars on a bus ride home. A sense of dread consumes you when you
+            think that perhaps the last time you see you wife and daughter will be when you arrive home and 
+            explain what happened. You lean back on the cold bus seat and close your eyes, hoping this is merely a bad dream but you know 
+            that the reality is that your life has been consumed by the fires of gambling hell. """
+            )
+        else:
+            print("You must enter 'y' or 'n' to proceed")
+            continue
 
 
 def main():
