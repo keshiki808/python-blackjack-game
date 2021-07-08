@@ -17,12 +17,12 @@ import random
 
 # <<<<<<<<<<<<DONE>>>>>>>>-Handle the exception that occurs if the player can't find the data file
 
-# -Handle the exceptions that occur if the user enters a string where an integer or float value is expected
+# <<<<<<<<<<<<DONE>>>>>>>>-Handle the exceptions that occur if the user enters a string where an integer or float value is expected
 
 # <<<<<<<<<<<<DONE>>>>>>>>-The program should validate the bet amount.
-# >>> The minimum bet should be 5
-# >>> The maximum bet should be 1,000
-# >>> The bet can't be bigger than the player's current amount of money.
+# <<<<<<<<<<<<DONE>>>>>>>>>>> The minimum bet should be 5
+# <<<<<<<<<<<<DONE>>>>>>>>>>> The maximum bet should be 1,000
+# <<<<<<<<<<<<DONE>>>>>>>>>>> The bet can't be bigger than the player's current amount of money.
 
 # -If the money amount drops below the minimum bet(5), the program should give the player the option to buy more chips.
 
@@ -187,6 +187,13 @@ def results_display(player_win_status, draw_status):
         print("It was a draw")
     else:
         print("Player loses")
+
+def buy_chips():
+    while true:
+        try:
+            response = input("You have less than 5 chips, Would you like to buy some more? (y/n): ")
+            if response == "y":
+                money_response = input("You have less than 5 chips, Would you like to buy some more? (y/n): ")
 
 
 def main():
