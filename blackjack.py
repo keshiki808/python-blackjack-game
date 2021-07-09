@@ -2,6 +2,8 @@ import copy
 import db
 import random
 
+import deck
+
 # To do :
 # <<<<<<<<<<<<DONE>>>>>>>>-Create a list to store the suit, rank, and point value for each card
 
@@ -203,7 +205,7 @@ def buy_chips(player_chips):
             try:
                 money_response = int(
                     input(
-                        f"How many chips would you like to buy? Enter a value between 5 and 1000 chips :"
+                        f"How many chips would you like to buy? Enter a value between 5 and 1000 chips: "
                     )
                 )
                 print()
@@ -213,7 +215,7 @@ def buy_chips(player_chips):
                     )
                 else:
                     print(
-                        f"Thank you for your purchase. You now have {player_chips + money_response} chips"
+                        f"Thank you for your purchase. You now have {player_chips + money_response} chips\n"
                     )
                     return player_chips + money_response
             except ValueError:
@@ -243,7 +245,8 @@ def buy_chips(player_chips):
 
 
 def main():
-    deck = deck_creator()
+    title()
+    card_deck = deck_creator()
     player_money = db.money_reader()
     player_money = 2
     if player_money < 5:
@@ -251,14 +254,16 @@ def main():
     db.money_writer(player_money)
     bet, player_money = user_bet_input(player_money)
     print("Player money", player_money)
-    print(deck)
+    print(card_deck)
     player_hand = []
     dealer_hand = []
-    card_picker(deck, dealer_hand)
+    card_picker(card_deck, dealer_hand)
     dealer_hand_value = hand_value_tabulator(dealer_hand)
-    print(f"DEALER'S SHOW CARD:\n{dealer_hand[0][1]} of {dealer_hand[0][2]}")
-    card_picker(deck, player_hand)
-    card_picker(deck, player_hand)
+    print(f"DEALER'S SHOW CARD:\n{dealer_hand[0][1]} of {dealer_hand[0][2]}\n")
+    deck.card_image_builder(dealer_hand)  # -----------------------------
+    card_picker(card_deck, player_hand)
+    card_picker(card_deck, player_hand)
+    deck.card_image_builder(player_hand)  # -----------------------------
     card_display(player_hand, "YOUR")
     player_hand_value = hand_value_tabulator(player_hand)
     player_hand_value = ace_checker(player_hand, player_hand_value)
@@ -267,7 +272,7 @@ def main():
     player_bust = False
     dealer_bust = False
     while hit == True:
-        card_picker(deck, player_hand)
+        card_picker(card_deck, player_hand)
         card_display(player_hand, "YOUR")
         player_hand_value = hand_value_tabulator(player_hand)
         player_hand_value = ace_checker(player_hand, player_hand_value)
@@ -277,10 +282,11 @@ def main():
             break
         else:
             hit = hit_or_stand_declaration()
+            print()
     while dealer_hand_value < 17:
         if player_bust:
             break
-        card_picker(deck, dealer_hand)
+        card_picker(card_deck, dealer_hand)
         card_display(dealer_hand, "DEALER'S")
         dealer_hand_value = hand_value_tabulator(dealer_hand)
         dealer_hand_value = dealer_ace_checker(dealer_hand, dealer_hand_value)
