@@ -1,18 +1,22 @@
 import db
 import deck
 
-# Displays the title
+
 def title():
     print("Welcome to blackjack")
     print()
 
 
-# Accepts a hand and tabulates the value of it
 def hand_value_tabulator(player_cards):
     value = 0
     for card in player_cards:
         value += card[0]
     return value
+
+
+def blackjack_checker(hand_value):
+    if hand_value == 21:
+        print("Blackjack!")
 
 
 # Determines if the player has any aces, allows them to choose 1 or 11 for the value
@@ -34,7 +38,7 @@ def ace_checker(player_cards, value):
                     else:
                         raise ValueError
                 except ValueError:
-                    print("Please enter 1 or 11")
+                    print("Error: Please enter 1 or 11")
             else:
                 break
     return value
@@ -59,11 +63,13 @@ def bust_checker(hand_value):
     return True if hand_value > 21 else False
 
 
-# Accepts the user wager
+# Method that facilitates user betting, ensures the betting bounds are between 5 and 1000
 def user_bet_input(player_money):
     while True:
         try:
-            bet = float(input("Please enter an amount to bet between 5 and 1000: "))
+            bet = round(
+                float(input("Please enter an amount to bet between 5 and 1000: ")), 2
+            )
             if bet < 5 or bet > 1000:
                 raise Exception(
                     "Invalid entry: It must be a numerical value between 5 and 1000"
@@ -80,7 +86,7 @@ def user_bet_input(player_money):
             print(e)
 
 
-# Initiates player turn cycle
+# Returns a boolean to reinitate player turn cycle
 def hit_or_stand_declaration():
     while True:
         try:
@@ -93,7 +99,6 @@ def hit_or_stand_declaration():
             print("You must enter hit or stand")
 
 
-# Accepts player and dealer states as arguments and returns a boolean indicating if the player won
 def player_victory_check(
     player_hand_value, dealer_hand_value, player_bust_status, dealer_bust_status
 ):
@@ -107,25 +112,25 @@ def player_victory_check(
         False
 
 
-# Returns a boolean to determine if the dealer and player draw
 def draw_check(player_hand_value, dealer_hand_value):
     return True if player_hand_value == dealer_hand_value else False
 
 
-# Calculates the payout for the
 def payout(player_win_status, draw_status, bet, player_money):
     if player_win_status:
-        payout = bet * 1.5
+        payout = round(bet * 1.5, 2)
+        print(f"You won {payout} chips, you now have ${player_money + payout}")
     elif draw_status:
         payout = bet
+        print(f"You get your bet back. You have ${player_money + bet}")
     else:
         payout = 0
+        print(f"You now have ${player_money}.")
     player_money += payout
     db.money_writer(player_money)
     return player_money
 
 
-# Displays the results of the round
 def results_display(player_win_status, draw_status):
     if player_win_status:
         print("Player wins")
@@ -143,10 +148,14 @@ def buy_chips(player_chips):
         )
         if response == "y":
             try:
-                money_response = int(
-                    input(
-                        f"How many chips would you like to buy? Enter a value between 5 and 1000 chips: "
-                    )
+                money_response = round(
+                    float(
+                        input(
+                            f"How many chips would you like to buy? "
+                            f"Enter a value between 5 and 1000 chips: "
+                        )
+                    ),
+                    2,
                 )
                 print()
                 if money_response < 5 or money_response > 1000:
@@ -154,11 +163,12 @@ def buy_chips(player_chips):
                         "Invalid entry, you need to purchase at least 5 chips and no more than 1000\n"
                     )
                 else:
+                    new_total = player_chips + money_response
                     print(
-                        f"Thank you for your purchase. You now have {player_chips + money_response} chips\n"
+                        f"Thank you for your purchase. You now have {new_total} chips\n"
                     )
-                    db.money_writer(player_chips + money_response)
-                    return player_chips + money_response
+                    db.money_writer(new_total)
+                    return new_total
             except ValueError:
                 print("You must enter a valid integer\n")
         elif response == "n":
@@ -174,8 +184,15 @@ def buy_chips(player_chips):
 
 
 def play_again():
-    response = input("Play again? (y/n): ")
-    return "y" if response == "y" else quit()
+    while True:
+        response = input("Play again? (y/n): ")
+        if response == "y":
+            break
+        elif response == "n":
+            print("See ya")
+            quit()
+        else:
+            print("Please enter 'y' to play again or 'n' to quit")
 
 
 def main():
@@ -183,12 +200,12 @@ def main():
     while True:
         card_deck = deck.deck_creator()
         player_money = db.money_reader()
+        print("Current player money: " f"${player_money}")
 
-        # Option given to buy chips then bet
+        # Option given to buy chips if less than 5 then bet
         if player_money < 5:
             player_money = buy_chips(player_money)
         bet, player_money = user_bet_input(player_money)
-        print("Player chips:", player_money)
         print()
 
         # Initial setup of hands and bust status
@@ -198,12 +215,12 @@ def main():
         dealer_bust = False
         player_win = False
 
-        # Card dealt to player
+        # Card dealt to player, listed and illustrated
         deck.card_picker(card_deck, player_hand)
         deck.card_display(player_hand, "YOUR")
         deck.card_image_builder(player_hand)
 
-        # Dealer reveals showcard
+        # Dealer reveals showcard, listed and illustrated
         deck.card_picker(card_deck, dealer_hand)
         dealer_hand_value = hand_value_tabulator(dealer_hand)
         deck.card_display(dealer_hand, "DEALER'S SHOW")
@@ -216,6 +233,7 @@ def main():
         deck.card_image_builder(player_hand)  # -----------------------------
         player_hand_value = hand_value_tabulator(player_hand)
         player_hand_value = ace_checker(player_hand, player_hand_value)
+        blackjack_checker(player_hand_value)
         hit = hit_or_stand_declaration()
         print()
 
@@ -227,8 +245,10 @@ def main():
             player_hand_value = hand_value_tabulator(player_hand)
             player_hand_value = ace_checker(player_hand, player_hand_value)
             player_bust = bust_checker(player_hand_value)
+            blackjack_checker(player_hand_value)
             print()
             if player_bust:
+                print("Player busts")
                 break
             else:
                 hit = hit_or_stand_declaration()
@@ -244,8 +264,10 @@ def main():
             dealer_hand_value = hand_value_tabulator(dealer_hand)
             dealer_hand_value = dealer_ace_checker(dealer_hand, dealer_hand_value)
             dealer_bust = bust_checker(dealer_hand_value)
+            blackjack_checker(dealer_hand_value)
             print()
             if dealer_bust:
+                print("Dealer busts")
                 break
 
         # Determines outcome, win, loss or draw for player
@@ -256,10 +278,11 @@ def main():
             )
 
         # Cleanup by paying out the player and displaying the results
-        payout(player_win, draw, bet, player_money)
         results_display(player_win, draw)
+        payout(player_win, draw, bet, player_money)
 
         play_again()
+        print()
 
 
 if __name__ == "__main__":
