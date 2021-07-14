@@ -32,7 +32,7 @@ def card_picker(deck, hand):
     hand.append(random_card)
 
 
-# Displays the cards in a player's hand
+# Displays the names of cards in a player's hand
 def card_display(hand, hand_owner):
     if len(hand) == 1:
         print(f"{hand_owner} CARD:")
